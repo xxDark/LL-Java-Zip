@@ -48,6 +48,52 @@ public class ByteDataUtil {
 	}
 
 	/**
+	 * @param data
+	 * 		Content to search.
+	 * @param offset
+	 * 		Offset to begin search at.
+	 * @param pattern
+	 * 		Pattern to match.
+	 *
+	 * @return First index of pattern in content, or {@code -1} for no match.
+	 */
+	public static long indexOfQuad(ByteData data, long offset, int pattern) {
+		// Remaining data must be as long as pattern
+		long limit;
+		if (data == null || (limit = data.length()) < 4 || offset >= limit)
+			return -1;
+		// Search from offset going forwards
+		for (long i = offset; i < limit; i++)
+			if (startsWithQuad(data, i, pattern))
+				return i;
+		// Not found
+		return -1;
+	}
+
+	/**
+	 * @param data
+	 * 		Content to search.
+	 * @param offset
+	 * 		Offset to begin search at.
+	 * @param pattern
+	 * 		Pattern to match.
+	 *
+	 * @return First index of pattern in content, or {@code -1} for no match.
+	 */
+	public static long indexOfWord(ByteData data, long offset, int pattern) {
+		// Remaining data must be as long as pattern
+		long limit;
+		if (data == null || (limit = data.length()) < 2 || offset >= limit)
+			return -1;
+		// Search from offset going forwards
+		for (long i = offset; i < limit; i++)
+			if (startsWithWord(data, i, pattern))
+				return i;
+		// Not found
+		return -1;
+	}
+
+	/**
 	 * @param buffer
 	 * 		Content to search.
 	 * @param pattern
@@ -85,6 +131,28 @@ public class ByteDataUtil {
 	 * @param data
 	 * 		Content to search.
 	 * @param offset
+	 * 		Offset to begin search at.
+	 * @param pattern
+	 * 		Pattern to match.
+	 *
+	 * @return Last index of pattern in content, or {@code -1} for no match.
+	 */
+	public static long lastIndexOfQuad(ByteData data, long offset, int pattern) {
+		// Remaining data must be as long as pattern
+		if (data == null || data.length() < 4)
+			return -1;
+		// Search from offset going backwards
+		for (long i = offset; i >= 0; i--)
+			if (startsWithQuad(data, i, pattern))
+				return i;
+		// Not found
+		return -1;
+	}
+
+	/**
+	 * @param data
+	 * 		Content to search.
+	 * @param offset
 	 * 		Offset to begin check at.
 	 * @param pattern
 	 * 		Pattern to match.
@@ -105,6 +173,40 @@ public class ByteDataUtil {
 		}
 		// No mis-match, array starts with pattern
 		return true;
+	}
+
+	/**
+	 * @param data
+	 * 		Content to search.
+	 * @param offset
+	 * 		Offset to begin check at.
+	 * @param pattern
+	 * 		Pattern to match.
+	 *
+	 * @return {@code true} when the content of the array at the offset matches the pattern.
+	 */
+	public static boolean startsWithQuad(ByteData data, long offset, int pattern) {
+		// Remaining data must be as long as pattern and in the array bounds
+		if (data == null || (data.length() - offset) < 4 || offset < 0 || offset >= data.length())
+			return false;
+		return readQuad(data, offset) == pattern;
+	}
+
+	/**
+	 * @param data
+	 * 		Content to search.
+	 * @param offset
+	 * 		Offset to begin check at.
+	 * @param pattern
+	 * 		Pattern to match.
+	 *
+	 * @return {@code true} when the content of the array at the offset matches the pattern.
+	 */
+	public static boolean startsWithWord(ByteData data, long offset, int pattern) {
+		// Remaining data must be as long as pattern and in the array bounds
+		if (data == null || (data.length() - offset) < 2 || offset < 0 || offset >= data.length())
+			return false;
+		return readWord(data, offset) == pattern;
 	}
 
 	/**
